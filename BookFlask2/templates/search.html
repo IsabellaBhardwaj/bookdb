@@ -66,17 +66,17 @@
      </div>
 
       {%if posting %}
-       {% if title_results.count() == 0 and author_results.count() == 0 and genre_results.count() == 0%}
+       {% if no_results %}
         <h3>No results for <i>'{{query}}'</i></h3>
        {% else %}
         <h3>Results for <i>'{{query}}'</i>:</h3>
-        {% for result in title_results %}
+        {% for key,result in title_results.iteritems() %}
           <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
         {%endfor%}
-        {% for result in author_results %}
+        {% for key, result in author_results.iteritems() %}
           <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
         {%endfor%}
-        {% for result in genre_results %}
+        {% for key, result in genre_results.iteritems() %}
           <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
         {%endfor%}
        {% endif %}
