@@ -39,38 +39,25 @@ def search():
 		query = request.form['query']
 		title_cursor = books.find({'title':query})
 		author_cursor = books.find({'author':query})
-		genre_cursor = books.find({'genre':query})
 
-		no_results = author_cursor.count() == 0 and title_cursor.count() == 0 and genre_cursor.count() == 0
+		no_results = author_cursor.count() == 0 and title_cursor.count() == 0
 	
-		title_dict = {}
-		for element in title_cursor:
-			inner_dict = {} 
-			for key in element:
-				inner_dict[key] = element[key]	
-			title_dict[element['_id']]= inner_dict
+		title_dict = convert_to_dict(title_cursor)
+		author_dict = convert_to_dict(author_cursor)     
 
-		author_dict = {}
-		for element in author_cursor:
-			inner_dict = {} 
-			for key in element:
-				inner_dict[key] = element[key]
-			author_dict[element['_id']] = inner_dict
-		
-
-		genre_dict = {}
-		for element in genre_cursor:
-			inner_dict = {} 
-			for key in element:
-				inner_dict[key] = element[key]
-			genre_dict[element['_id']] = inner_dict
-		
-
-      
-
-		return render_template('search.html', posting=True, query=query, no_results=no_results, title_results=title_dict, author_results=author_dict, genre_results=genre_dict)  
+		return render_template('search.html', posting=True, query=query, no_results=no_results, title_results=title_dict, author_results=author_dict, genre_results={})  
 	else:
 		return render_template('search.html', posting=False)
+
+
+def convert_to_dict(iterable):
+	outer_dict = {}
+	for element in iterable:
+		inner_dict = {} 
+		for key in element:
+			inner_dict[key] = element[key]	
+		outer_dict[element['_id']]= inner_dict
+	return outer_dict
 
 
 #The page to add a book to the database
