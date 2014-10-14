@@ -76,9 +76,6 @@
         {% for key, result in author_results.iteritems() %}
           <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
         {%endfor%}
-        {% for key, result in genre_results.iteritems() %}
-          <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
-        {%endfor%}
        {% endif %}
       {% endif %}
 

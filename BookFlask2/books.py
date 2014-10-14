@@ -45,7 +45,7 @@ def search():
 		title_dict = convert_to_dict(title_cursor)
 		author_dict = convert_to_dict(author_cursor)     
 
-		return render_template('search.html', posting=True, query=query, no_results=no_results, title_results=title_dict, author_results=author_dict, genre_results={})  
+		return render_template('search.html', posting=True, query=query, no_results=no_results, title_results=title_dict, author_results=author_dict)  
 	else:
 		return render_template('search.html', posting=False)
 
