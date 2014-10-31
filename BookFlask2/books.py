@@ -13,9 +13,14 @@ def splash():
 	return app.send_static_file('splash.html')
 
 #Individual information page for each book
-@app.route('/detail/<title>/<author>/')
+@app.route('/detail/<title>/<author>/', methods=['GET', 'POST'])
 def detail(title, author):
-	cursor = books.find_one({'title':title, 'author':author})
+	if request.method == 'GET':
+		cursor = books.find_one({'title':title, 'author':author})
+
+	elif request.method == 'POST':
+		books.update({'title':title, 'author':author}, {'$set': {'title':request.form['title'], 'author':request.form['author'], 'genre': request.form['genre'], 'description':request.form['description']}})
+		cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
 	results = {field:value for field, value in cursor.items()}
 	return render_template('detail.html', result=results)
 
