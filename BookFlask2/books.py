@@ -19,6 +19,7 @@ def detail(title, author):
 		cursor = books.find_one({'title':title, 'author':author})
 
 	elif request.method == 'POST':
+		print(str(request.form))
 		books.update({'title':title, 'author':author}, {'$set': {'title':request.form['title'], 'author':request.form['author'], 'genre': request.form['genre'], 'description':request.form['description']}})
 		cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
 	results = {field:value for field, value in cursor.items()}

@@ -96,17 +96,53 @@
       </div>
       <div class="modal-body">
        <form method="post" class="form" action="/detail/{{result['title']}}/{{result['author']}}/">
-         <input type="text" name="title" value="{{result['title']}}"></br>
-         <input type="text" name="author" value="{{result['author']}}"></br>
-         <input type="text" name="genre" value="{{result['genre']}}"></br>
-         <input type="text" name="description" value="{{result['description']}}"></br>
-         <input type="submit" value="Submit">
+	 <p>Title:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<input type="text" name="title" value="{{result['title']}}"></p>
+         <p>Author:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<input type="text" name="author" value="{{result['author']}}"></p>
+         <p>Genre:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<input type="text" name="genre" value="{{result['genre']}}"></p>
+         <p>Description:&nbsp&nbsp<input type="text" name="description" value="{{result['description']}}"></p>
+	<input type="button" id="addLine" value="Add Field" onclick="func()"></br></br>
+        <input type="submit" value="Submit">
        <form>      
       </div>
     </div>
   </div>
 </div>
 
+<!--This section of code is from http://www.quirksmode.org/dom/domform.html -->
+<div id="addField" style="display: none">
+	<input type="text" name="field" placeholder="New Field">
+	<input type="text" name="value" placeholder="New Value">
+	<input type="button" name="add" value="X" onclick="this.parentNode.parentNode.removeChild(this.parentNode);">
+</div>
+
+<script>
+var counter=0;
+function func(){
+	counter++;
+	var newFields=document.getElementById('addField').cloneNode(true);
+	newFields.style.display = 'block';
+	var children = newFields.childNodes;
+	for(var i = 0; i < children.length; i++){
+		var name = children[i].name
+		if(name){
+			var root = name.substring(0, 5);
+			if(root == 'field'){
+				children[i].name = "field"+counter;
+				children[i].value = "";
+				children[i].placeholder = "New Field";
+			}
+			else if(root == 'value'){
+				children[i].name = "value"+counter;
+				children[i].value = "";
+				children[i].placeholder = "New Value";
+			}
+		}
+	}
+	var insertHere = document.getElementById('addLine');
+	insertHere.parentNode.insertBefore(newFields, insertHere);	
+}
+</script>
+<!-- Code from http://www.quirksmode.org/dom/domform.html ends here --> 
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
