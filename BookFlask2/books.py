@@ -19,8 +19,19 @@ def detail(title, author):
 		cursor = books.find_one({'title':title, 'author':author})
 
 	elif request.method == 'POST':
-		books.update({'title':title, 'author':author}, {'$set': {'title':request.form['title'], 'author':request.form['author'], 'genre': request.form['genre'], 'description':request.form['description']}})
+		#Add new values of all pre-existing attributes
+		updated_document = {attribute: value for attribute, value in request.form.iteritems() if attribute[:9] != 'new_field' and attribute[:9] != 'new_value'}
+		num_old_fields = len(updated_document)
+		num_new_fields = (len(request.form)-num_old_fields)/2
+		#Add values of new fields, if any
+		if(num_new_fields > 0):
+			for i in range(1, num_new_fields + 1):
+				new_attribute = request.form['new_field'+str(i)]
+				new_value = request.form['new_value'+str(i)]
+				updated_document[new_attribute] = new_value
+		books.update({'title':title, 'author': author}, updated_document)
 		cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
+			
 	results = {field:value for field, value in cursor.items()}
 	return render_template('detail.html', result=results)
 

@@ -51,34 +51,31 @@
        <div class="row">
        <div class="col-md-6">
         <h1>{{result['title']}}</br>By {{result['author']}}</br></h1>
-        <h2>Genre:{{result['genre']}}</h2>
 	<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#update">Update</button>
+
        </div>
         <div class="media">
          <img class="media-object" src="/static/images/{{result['image']}}/">
          <caption>Image from {{result['image_src']}}</caption>
        </div>
       </div>
+
     </div>
     </div>
     <div class="bottom">
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
-        <div class="col-md-6">
-          <h2>About</h2>
-          <p>{{result['description']}}</p>
-        </div>
-        <div class="col-md-6">
-         <div class="panel panel-default">
-          <div class="panel-heading">
-           <h3 class="panel-title">User Comments/Reviews</h3>
-          </div>
-         <div class="panel-body">
-           Nothing here yet
-         </div>
-         </div>
-        </div>
+	<div class="col-md-6">
+	<h1><b>Information:</b></h1>
+	{% set count = 1 %}
+	{% for attr, value in result.iteritems() %}
+		{% if attr != 'title' and attr != 'author'and attr != 'image' and attr != 'image_src' and attr != '_id' %}
+		<h3><b>{{attr}}</b>: {{value}}</h2>
+		{% endif %}	
+
+	{% endfor %}
+      </div>
       </div>
       </div>
 
@@ -96,17 +93,65 @@
       </div>
       <div class="modal-body">
        <form method="post" class="form" action="/detail/{{result['title']}}/{{result['author']}}/">
-         <input type="text" name="title" value="{{result['title']}}"></br>
+	 <label for="title">Title: </label>
+	 <input type="text" name="title" value="{{result['title']}}"></br>	 
+	 <label for="author">Author: </label>
          <input type="text" name="author" value="{{result['author']}}"></br>
-         <input type="text" name="genre" value="{{result['genre']}}"></br>
-         <input type="text" name="description" value="{{result['description']}}"></br>
-         <input type="submit" value="Submit">
-       <form>      
+
+
+	 {% for attr, value in result.iteritems() %}
+		{% if attr != 'title' and attr != 'author' and attr != 'image' and attr != 'image_src' and attr != '_id' %}				
+				{% set label_id = attr+'Label' %}
+				{% set button_id = attr+'Button' %}
+				<label for="{{attr}}" id="{{label_id}}">{{attr}}: </label>
+				<input type="text" id="{{attr}}" name="{{attr}}" value="{{value}}"></br>
+		{% endif %}
+		
+	 {% endfor %}
+	<input type="button" id="addLine" value="Add Field" onclick="addNew()"></br></br>
+        <input type="submit" value="Submit">
+       </form>      
       </div>
     </div>
   </div>
 </div>
 
+<!--This section of code is from http://www.quirksmode.org/dom/domform.html -->
+<div id="addField" style="display: none">
+	<input type="text" name="new_field" placeholder="New Attribute">
+	<input type="text" name="new_value" placeholder="New Value">
+	<input type="button" name="add" value="Remove" onclick="this.parentNode.parentNode.removeChild(this.parentNode);">
+</div>
+
+<script>
+var counter=0;
+function addNew(){
+	counter++;
+	var newFields=document.getElementById('addField').cloneNode(true);
+	newFields.style.display = 'block';
+	var children = newFields.childNodes;
+	for(var i = 0; i < children.length; i++){
+		var name = children[i].name
+		if(name){
+			var root = name.substring(0, 9);
+			if(root == 'new_field'){
+				children[i].name = "new_field"+counter;
+				children[i].value = "";
+				children[i].placeholder = "New Field";
+			}
+			else if(root == 'new_value'){
+				children[i].name = "new_value"+counter;
+				children[i].value = "";
+				children[i].placeholder = "New Value";
+			}
+		}
+	}
+	var insertHere = document.getElementById('addLine');
+	insertHere.parentNode.insertBefore(newFields, insertHere);	
+}
+
+</script>
+<!-- Code from http://www.quirksmode.org/dom/domform.html ends here --> 
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
