@@ -19,12 +19,11 @@ def detail(title, author):
 		cursor = books.find_one({'title':title, 'author':author})
 
 	elif request.method == 'POST':
+		#Add new values of all pre-existing attributes
 		updated_document = {attribute: value for attribute, value in request.form.iteritems() if attribute[:9] != 'new_field' and attribute[:9] != 'new_value'}
-		print(updated_document)
-		print(request.form)
 		num_old_fields = len(updated_document)
 		num_new_fields = (len(request.form)-num_old_fields)/2
-		print(num_new_fields)
+		#Add values of new fields, if any
 		if(num_new_fields > 0):
 			for i in range(1, num_new_fields + 1):
 				new_attribute = request.form['new_field'+str(i)]

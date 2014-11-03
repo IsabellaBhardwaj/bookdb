@@ -103,9 +103,8 @@
 		{% if attr != 'title' and attr != 'author' and attr != 'image' and attr != 'image_src' and attr != '_id' %}				
 				{% set label_id = attr+'Label' %}
 				{% set button_id = attr+'Button' %}
-				<label for={{attr}} id={{label_id}}>{{attr}}: </label>
-				<input type="text" id={{attr}} name={{attr}} value={{value}}>
-				<input type="button" id={{button_id}} value="Remove" onclick="removeField({{attr}}, {{label_id}}, {{button_id}});"></br>
+				<label for="{{attr}}" id="{{label_id}}">{{attr}}: </label>
+				<input type="text" id="{{attr}}" name="{{attr}}" value="{{value}}"></br>
 		{% endif %}
 		
 	 {% endfor %}
@@ -151,14 +150,6 @@ function addNew(){
 	insertHere.parentNode.insertBefore(newFields, insertHere);	
 }
 
-function removeField(attr, attr_label, attr_button){
-
-	attr.parentNode.removeChild(attr);
-	attr_label.parentNode.removeChild(attr_label);
-	attr_button.parentNode.removeChild(attr_button);
-
-
-}
 </script>
 <!-- Code from http://www.quirksmode.org/dom/domform.html ends here --> 
 
