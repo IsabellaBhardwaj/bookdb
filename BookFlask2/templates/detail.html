@@ -51,28 +51,15 @@
        <div class="row">
        <div class="col-md-6">
         <h1>{{result['title']}}</br>By {{result['author']}}</br></h1>
-	{% if 'genre' in result %}
-        <h2>Genre:{{result['genre']}}</h2>
-	{% else %}
-	<h2>Genre:[None Found]</h2>
-	{% endif %}
 	<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#update">Update</button>
+
        </div>
         <div class="media">
          <img class="media-object" src="/static/images/{{result['image']}}/">
          <caption>Image from {{result['image_src']}}</caption>
        </div>
       </div>
-     <div class="row">
-	<div class= "col-md-6">
-	   {% if 'description' in result %}
-	     <h2>Description:</h2>
-             <p>{{result['description']}}</p>
-   	   {% else %}
-	     <h2>Description: [None Found]</h2>
-	   {% endif %}
-	</div>
-     </div>
+
     </div>
     </div>
     <div class="bottom">
@@ -80,11 +67,11 @@
       <!-- Example row of columns -->
       <div class="row">
 	<div class="col-md-6">
-	<h2>More Information: </h2>
+	<h1><b>Information:</b></h1>
 	{% set count = 1 %}
 	{% for attr, value in result.iteritems() %}
-		{% if attr != 'title' and attr != 'author' and attr != 'genre' and attr != 'description' and attr != 'image' and attr != 'image_src' and attr != '_id' %}
-		<h3>{{attr}}: {{value}}</h2>
+		{% if attr != 'title' and attr != 'author'and attr != 'image' and attr != 'image_src' and attr != '_id' %}
+		<h3><b>{{attr}}</b>: {{value}}</h2>
 		{% endif %}	
 
 	{% endfor %}
@@ -112,27 +99,9 @@
          <input type="text" name="author" value="{{result['author']}}"></br>
 
 
-	  {% if 'genre' in result %}
-	{% set label_id = 'genreLabel' %}
-	{% set button_id = 'genreButton' %}
-	{% set input_id = 'genreInput' %}
-	 <label for="genre" id={{label_id}} >Genre: </label>
-	 <input type="text" id={{input_id}} name="genre" value={{result['genre']}}>
-	 <input type="button" id={{button_id}} value="Remove" onclick="removeField({{label_id}}, {{input_id}}, {{button_id}});"></br>
-	  {% endif %}
-
-	  {% if 'description' in result %}
-	{% set label_id = 'descriptionLabel' %}
-	{% set button_id = 'descriptionButton' %}
-	{% set input_id = 'descriptionInput' %}
-	 <label for="description" id={{label_id}} >Description: </label>
-	 <input type="text" id={{input_id}} name="description" value={{result['description']}}>
-	 <input type="button" id={{button_id}} value="Remove" onclick="removeField({{label_id}}, {{input_id}}, {{button_id}});"></br>
-	  {% endif %}
-
-
 	 {% for attr, value in result.iteritems() %}
-		{% if attr != 'title' and attr != 'author' and attr != 'genre' and attr != 'description' and attr != 'image' and attr != 'image_src' and attr != '_id' %}				{% set label_id = attr+'Label' %}
+		{% if attr != 'title' and attr != 'author' and attr != 'image' and attr != 'image_src' and attr != '_id' %}				
+				{% set label_id = attr+'Label' %}
 				{% set button_id = attr+'Button' %}
 				<label for={{attr}} id={{label_id}}>{{attr}}: </label>
 				<input type="text" id={{attr}} name={{attr}} value={{value}}>
@@ -140,7 +109,7 @@
 		{% endif %}
 		
 	 {% endfor %}
-	<input type="button" id="addLine" value="Add Field" onclick="func()"></br></br>
+	<input type="button" id="addLine" value="Add Field" onclick="addNew()"></br></br>
         <input type="submit" value="Submit">
        </form>      
       </div>
@@ -157,7 +126,7 @@
 
 <script>
 var counter=0;
-function func(){
+function addNew(){
 	counter++;
 	var newFields=document.getElementById('addField').cloneNode(true);
 	newFields.style.display = 'block';
