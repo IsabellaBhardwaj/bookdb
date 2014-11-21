@@ -70,10 +70,7 @@
         <h3>No results for <i>'{{query}}'</i></h3>
        {% else %}
         <h3>Results for <i>'{{query}}'</i>:</h3>
-        {% for key,result in title_results.iteritems() %}
-          <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
-        {%endfor%}
-        {% for key, result in author_results.iteritems() %}
+        {% for key,result in results.iteritems() %}
           <a href="/detail/{{result['title']}}/{{result['author']}}/">{{result['title']}} by {{result['author']}}</br></a>
         {%endfor%}
        {% endif %}
