@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request
 from cassandra.cluster import Cluster
 import uuid
+import json
 
 app = Flask(__name__, static_url_path = "")
 
@@ -28,7 +29,7 @@ def add():
 		if new_data['title'] == '' or new_data['author'] == '' or new_data['genre'] == '' or new_data['description'] == '':
 			return render_template('add.html', alert="required")
 		else:
-			#wrap in transaction?
+			#put statements in batch later
 			id = uuid.uuid4()
 			insert_statement = "INSERT INTO "+table_name+"(id, property, value) values("+str(id)+", %s, %s)"
 			session.execute(insert_statement, ('title', new_data['title']))	
@@ -86,36 +87,35 @@ def search():
 def detail(id):
 	id = uuid.UUID(id)
 	if request.method == 'POST':
+		old_prop_query = "SELECT property FROM "+table_name+" WHERE id=%s"
+		old_rows = session.execute(old_prop_query, (id,))
+		#all properties for this book prior to upgrade
+		old_properties = {str(row.property) for row in old_rows}
+		#all properties for this book after upgrade
+		current_properties = set()
 		#In the dict request.form, pre-existing properties and values make up key-value pairs, with the property being the key and the value being the value. New properties and values are all values in the dictionary, and their keys are named "new_field"+str(pair_number) and "new_value"+str(pair_number), respectively. pair_number is a digit that identifies which new property goes with which new value. 	
 		for key, value in request.form.iteritems():
 			#add new property and value to book
 			if key[:9] == 'new_field':
 				pair_number = key[9:]
 				session.execute("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['new_value'+str(pair_number)], id, value))			
+				current_properties.add(str(value))
+			
 			#update value of existing property of book
 			elif key[:9] != 'new_value':
 				session.execute("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(value, id, key))
-
+				current_properties.add(str(key)) 
+		
+		to_remove = old_properties - current_properties
+		delete_statement = "DELETE FROM "+table_name+" WHERE id=%s and property=%s"
+		for property in to_remove:
+			session.execute(delete_statement, (id, property)) 
+	
 	result = {}
-	all_properties = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
-	for property in all_properties:
+	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
+	for property in all_props_and_vals:
 		result[property.property] = property.value
-	return render_template('detail_cass.html', result=result, id=id)
-
-
-
-
-def convert_to_dict(iterable, *fields):
-	outer_dict = {}
-	outer_key = 0
-	for element in iterable:
-		inner_dict = {}
-		for field in fields:
-			inner_dict[field] = getattr(element, field)
-		outer_dict[outer_key]= inner_dict
-		outer_key += 1
-	return outer_dict
-
+	return render_template('detail_cass.html', result=result, result2=json.dumps(result), id=id)
 
 
 
