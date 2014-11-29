@@ -97,21 +97,46 @@
 	 <input type="text" name="title" value="{{result['title']}}"></br>	 
 	 <label for="author">Author: </label>
          <input type="text" name="author" value="{{result['author']}}"></br>
+	 <input type="button" id="addLine" value="Add Field" onclick="addNew()"></br></br>
+	<script type="text/javascript">
+		var result2 = "{{ result2 }}";
+		result2 = result2.replace(/&#34;/g, "\"");
+		result2 = JSON.parse(result2);
+		var counter=1; 
+		for(property in result2){
+			if(property != "_id" && property != 'title' && property != 'author'){
+				var div = document.createElement("div");
+				var remove = document.createElement("BUTTON");
+				remove.setAttribute("onclick", "this.parentNode.parentNode.removeChild(this.parentNode);");
+				var button_text = document.createTextNode("Remove");
+					remove.appendChild(button_text);
+			
+				var value = document.createElement("INPUT");
+				//the property label's "for" attribute will be set to this temporary name, 
+				//so as to remove issues with two different properties having the same value
+				var temp_value_name = "old_value"+counter;
+				value.setAttribute("type", "text");
+				value.setAttribute("value", result2[property]);
+				value.setAttribute("name", temp_value_name);
+				value.setAttribute("id", temp_value_name);
+			
+				var property_label = document.createElement("LABEL");
+				property_label.setAttribute("for", temp_value_name);
+				value.setAttribute("name", property);
+				value.setAttribute("id", property);
+				property_label.innerHTML = property+": ";
+				property_label.setAttribute("name", property+"_label");
+				property_label.setAttribute("id", property+"_label");
 		
-	 <!--	
-	 {% for attr, value in result.iteritems() %}
-		{% if attr != 'title' and attr != 'author' and attr != 'image' and attr != 'image_src' and attr != '_id' %}				
-				{% set label_id = attr+'Label' %}
-				{% set button_id = attr+'Button' %}
-				<label for="{{attr}}" id="{{label_id}}">{{attr}}: </label>
-				<input type="text" id="{{attr}}" name="{{attr}}" value="{{value}}"></br>
-		{% endif %}
-		
-	 {% endfor %}
-	 {{result2}}
-	 -->
-	<input type="button" id="otherFields" value="See All Fields" onclick="moreFields()"></br></br>
-	<input type="button" id="addLine" value="Add Field" onclick="addNew()"></br></br>
+				div.appendChild(property_label);
+				div.appendChild(value);
+				div.appendChild(remove);
+				var insertHere = document.getElementById('addLine');
+				insertHere.parentNode.insertBefore(div, insertHere);	
+				counter++;
+			}
+		}
+	</script>
         <input type="submit" value="Submit">
        </form>      
       </div>
@@ -152,49 +177,6 @@ function addNew(){
 	}
 	var insertHere = document.getElementById('addLine');
 	insertHere.parentNode.insertBefore(newFields, insertHere);	
-}
-
-function moreFields(){
-
-	var result2 = "{{ result2 }}";
-	result2 = result2.replace(/&#34;/g, "\"");
-	result2 = JSON.parse(result2);
-	var counter=1; 
-	for(property in result2){
-		if(property != "_id" && property != 'title' && property != 'author'){
-			var div = document.createElement("div");
-			var remove = document.createElement("BUTTON");
-			remove.setAttribute("onclick", "this.parentNode.parentNode.removeChild(this.parentNode);");
-			var button_text = document.createTextNode("Remove");
-			remove.appendChild(button_text);
-		
-			var value = document.createElement("INPUT");
-			//the property label's "for" attribute will be set to this temporary name, 
-			//so as to remove issues with two different properties having the same value
-			var temp_value_name = "old_value"+counter;
-			value.setAttribute("type", "text");
-			value.setAttribute("value", result2[property]);
-			value.setAttribute("name", temp_value_name);
-			value.setAttribute("id", temp_value_name);
-		
-			var property_label = document.createElement("LABEL");
-			property_label.setAttribute("for", temp_value_name);
-			value.setAttribute("name", property);
-			value.setAttribute("id", property);
-			property_label.innerHTML = property+": ";
-			property_label.setAttribute("name", property+"_label");
-			property_label.setAttribute("id", property+"_label");
-		
-			div.appendChild(property_label);
-			div.appendChild(value);
-			div.appendChild(remove);
-			var insertHere = document.getElementById('addLine');
-			insertHere.parentNode.insertBefore(div, insertHere);	
-			counter++;
-		}
-	}
-
-
 }
 
 </script>
