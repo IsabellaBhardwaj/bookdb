@@ -111,11 +111,12 @@ def detail(id):
 		for property in to_remove:
 			session.execute(delete_statement, (id, property)) 
 	
-	result = {}
+	results = {}
 	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
 	for property in all_props_and_vals:
-		result[property.property] = property.value
-	return render_template('detail_cass.html', result=result, result2=json.dumps(result), id=id)
+		results[property.property] = property.value
+	modal_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
+	return render_template('detail_cass.html', result=results, modal_results=modal_results, id=id)
 
 
 

@@ -34,8 +34,9 @@ def detail(title, author):
 		books.update({'title':title, 'author': author}, updated_document)
 		cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
 			
-	results = {str(field):str(value) for field, value in cursor.items()}
-	return render_template('detail.html', result=results, result2 = json.dumps(results))
+	results = {field: value for field, value in cursor.items()}
+	modal_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
+	return render_template('detail.html', result=results, modal_results=modal_results)
 
 
 #serves image in image file for a particular book

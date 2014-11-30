@@ -99,9 +99,17 @@
          <input type="text" name="author" value="{{result['author']}}"></br>
 	 <input type="button" id="addLine" value="Add Field" onclick="addNew()"></br></br>
 	<script type="text/javascript">
-		var result2 = "{{ result2 }}";
+		{% autoescape false %}
+		var obj = 2;
+		{% endautoescape %}
+		window.alert(obj);
+		var result2 = '{{ modal_results|tojson }}';
+		//var result2 = '{{result2|safe}}';
+		window.alert(result2);
 		result2 = result2.replace(/&#34;/g, "\"");
+		window.alert(result2);
 		result2 = JSON.parse(result2);
+		window.alert(result2);
 		var counter=1; 
 		for(property in result2){
 			if(property != "id" && property != 'title' && property != 'author'){
@@ -109,7 +117,7 @@
 				var remove = document.createElement("BUTTON");
 				remove.setAttribute("onclick", "this.parentNode.parentNode.removeChild(this.parentNode);");
 				var button_text = document.createTextNode("Remove");
-					remove.appendChild(button_text);
+				remove.appendChild(button_text);
 			
 				var value = document.createElement("INPUT");
 				//the property label's "for" attribute will be set to this temporary name, 
