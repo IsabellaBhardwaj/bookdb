@@ -99,19 +99,10 @@
          <input type="text" name="author" value="{{result['author']}}"></br>
 	 <input type="button" id="addLine" value="Add Field" onclick="addNew()"></br></br>
 	<script type="text/javascript">
-		{% autoescape false %}
-		var obj = 2;
-		{% endautoescape %}
-		window.alert(obj);
-		var result2 = '{{ modal_results|tojson }}';
-		//var result2 = '{{result2|safe}}';
-		window.alert(result2);
-		result2 = result2.replace(/&#34;/g, "\"");
-		window.alert(result2);
-		result2 = JSON.parse(result2);
-		window.alert(result2);
+		var js_result = '{{ js_results|tojson }}';
+		js_result = JSON.parse(js_result);
 		var counter=1; 
-		for(property in result2){
+		for(property in js_result){
 			if(property != "id" && property != 'title' && property != 'author'){
 				var div = document.createElement("div");
 				var remove = document.createElement("BUTTON");
@@ -124,7 +115,7 @@
 				//so as to remove issues with two different properties having the same value
 				var temp_value_name = "old_value"+counter;
 				value.setAttribute("type", "text");
-				value.setAttribute("value", result2[property]);
+				value.setAttribute("value", js_result[property]);
 				value.setAttribute("name", temp_value_name);
 				value.setAttribute("id", temp_value_name);
 			

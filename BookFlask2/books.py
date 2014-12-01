@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request
 import pymongo
-import json
+
 
 app = Flask(__name__, static_url_path = "")
 connection_string = "mongodb://127.0.0.1"
@@ -22,7 +22,6 @@ def detail(title, author):
 	elif request.method == 'POST':
 		#Add new values of all pre-existing attributes
 		updated_document = {attribute: value for attribute, value in request.form.iteritems() if attribute[:9] != 'new_field' and attribute[:9] != 'new_value'}
-		print(updated_document)
 		num_old_fields = len(updated_document)
 		num_new_fields = (len(request.form)-num_old_fields)/2
 		#Add values of new fields, if any
@@ -35,8 +34,8 @@ def detail(title, author):
 		cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
 			
 	results = {field: value for field, value in cursor.items()}
-	modal_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
-	return render_template('detail.html', result=results, modal_results=modal_results)
+	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
+	return render_template('detail.html', result=results, js_results=js_results)
 
 
 #serves image in image file for a particular book

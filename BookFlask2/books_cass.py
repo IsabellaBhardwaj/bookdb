@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request
 from cassandra.cluster import Cluster
 import uuid
-import json
+
 
 app = Flask(__name__, static_url_path = "")
 
@@ -73,9 +73,6 @@ def search():
 			author_dict[str(id)] = inner_dict
 
 
-		print(title_dict)
-		print(author_dict)
-
 		return render_template('search_cass.html', posting=True, query=query, title_results=title_dict, author_results=author_dict)  
 
 	else:
@@ -115,8 +112,8 @@ def detail(id):
 	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
 	for property in all_props_and_vals:
 		results[property.property] = property.value
-	modal_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
-	return render_template('detail_cass.html', result=results, modal_results=modal_results, id=id)
+	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
+	return render_template('detail_cass.html', result=results, js_results=js_results, id=id)
 
 
 
