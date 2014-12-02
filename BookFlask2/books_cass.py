@@ -25,10 +25,8 @@ def splash():
 def featured():
 	query = "SELECT id FROM "+table_name+" LIMIT 1"
 	row = session.execute(query)[0]
-	print(row)
 	id = row.id
-	print("Id:"+str(id))
-	return redirect('/detail/'+str(row.id)+'/')
+	return redirect('/detail/'+str(id)+'/')
 	
 
 #The page to add a book to the database
