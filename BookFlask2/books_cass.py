@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request
 from cassandra.cluster import Cluster
 import uuid
+from cassandra.query import BatchStatement
 
 
 app = Flask(__name__, static_url_path = "")
@@ -40,11 +41,13 @@ def add():
 		else:
 			#put statements in batch later
 			id = uuid.uuid4()
+			batch = BatchStatement()
 			insert_statement = "INSERT INTO "+table_name+"(id, property, value) values("+str(id)+", %s, %s)"
-			session.execute(insert_statement, ('title', new_data['title']))	
-			session.execute(insert_statement, ('author', new_data['author']))	
-			session.execute(insert_statement, ('genre', new_data['genre']))	
-			session.execute(insert_statement, ('description', new_data['description']))			
+			batch.add(insert_statement, ('title', new_data['title']))	
+			batch.add(insert_statement, ('author', new_data['author']))	
+			batch.add(insert_statement, ('genre', new_data['genre']))	
+			batch.add(insert_statement, ('description', new_data['description']))
+			session.execute(batch)			
 			return render_template('add.html', alert = "success")
 	else:
 		return render_template('add.html', alert="")
