@@ -39,7 +39,6 @@ def add():
 		if new_data['title'] == '' or new_data['author'] == '' or new_data['genre'] == '' or new_data['description'] == '':
 			return render_template('add.html', alert="required")
 		else:
-			#put statements in batch later
 			id = uuid.uuid4()
 			batch = BatchStatement()
 			insert_statement = "INSERT INTO "+table_name+"(id, property, value) values("+str(id)+", %s, %s)"
