@@ -70,7 +70,7 @@
 	<h1><b>Information:</b></h1>
 	{% set count = 1 %}
 	{% for attr, value in result.iteritems() %}
-		{% if attr != 'title' and attr != 'author'and attr != 'image' and attr != 'image_src' and attr != '_id' %}
+		{% if attr != 'title' and attr != 'author'and attr != 'image' and attr != 'image_src' and attr != 'id' %}
 		<h3><b>{{attr}}</b>: {{value}}</h2>
 		{% endif %}	
 
@@ -92,7 +92,7 @@
         <h4 class="modal-title" id="myModalLabel">Update Book</h4>
       </div>
       <div class="modal-body">
-       <form method="post" class="form" action="/detail/{{result['title']}}/{{result['author']}}/">
+       <form method="post" class="form" action="/detail/{{id}}/">
 	 <label for="title">Title: </label>
 	 <input type="text" name="title" value="{{result['title']}}"></br>	 
 	 <label for="author">Author: </label>
@@ -103,7 +103,7 @@
 		js_result = JSON.parse(js_result);
 		var counter=1; 
 		for(property in js_result){
-			if(property != "_id" && property != 'title' && property != 'author'){
+			if(property != "id" && property != 'title' && property != 'author'){
 				var div = document.createElement("div");
 				var remove = document.createElement("BUTTON");
 				remove.setAttribute("onclick", "this.parentNode.parentNode.removeChild(this.parentNode);");
