@@ -43,12 +43,6 @@ def detail(title, author):
 def image(image):
 	return app.send_static_file('images/'+image)
 
-#Leads to detail page of a randomly chosen book
-@app.route('/featured/')
-def featured():
-	random = books.find_one()
-	return redirect('/detail/'+random['title']+'/'+random['author']+'/')
-
 
 #The search page
 @app.route('/search/', methods=['GET', 'POST'])

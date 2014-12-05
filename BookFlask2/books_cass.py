@@ -22,15 +22,6 @@ def splash():
 
 
 #The page to add a book to the database
-@app.route('/featured/')
-def featured():
-	query = "SELECT id FROM "+table_name+" LIMIT 1"
-	row = session.execute(query)[0]
-	id = row.id
-	return redirect('/detail/'+str(id)+'/')
-	
-
-#The page to add a book to the database
 @app.route('/add/', methods=['GET', 'POST'])
 def add():
 	if request.method == 'POST':
@@ -103,22 +94,24 @@ def detail(id):
 		#all properties for this book after upgrade
 		current_properties = set()
 		#In the dict request.form, pre-existing properties and values make up key-value pairs, with the property being the key and the value being the value. New properties and values are all values in the dictionary, and their keys are named "new_field"+str(pair_number) and "new_value"+str(pair_number), respectively. pair_number is a digit that identifies which new property goes with which new value. 	
+		batch = BatchStatement()
 		for key, value in request.form.iteritems():
 			#add new property and value to book
 			if key[:9] == 'new_field':
 				pair_number = key[9:]
-				session.execute("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['new_value'+str(pair_number)], id, value))			
+				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['new_value'+str(pair_number)], id, value))			
 				current_properties.add(str(value))
 			
 			#update value of existing property of book
 			elif key[:9] != 'new_value':
-				session.execute("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(value, id, key))
+				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(value, id, key))
 				current_properties.add(str(key)) 
 		
 		to_remove = old_properties - current_properties
 		delete_statement = "DELETE FROM "+table_name+" WHERE id=%s and property=%s"
 		for property in to_remove:
-			session.execute(delete_statement, (id, property)) 
+			batch.add(delete_statement, (id, property)) 
+		session.execute(batch)
 	
 	results = {}
 	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
