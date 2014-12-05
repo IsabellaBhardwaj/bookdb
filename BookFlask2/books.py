@@ -13,6 +13,13 @@ books = database.mybooks
 def splash():
 	return app.send_static_file('splash.html')
 
+
+#Remove a book
+@app.route('/remove/<title>/<author>/')
+def remove(title, author):
+	books.remove({'title':title, 'author':author})
+	return redirect('/')
+
 #Individual information page for each book
 @app.route('/detail/<title>/<author>/', methods=['GET', 'POST'])
 def detail(title, author):

@@ -20,6 +20,13 @@ session.execute("CREATE INDEX IF NOT EXISTS on %s(value);"%table_name)
 def splash():
 	return app.send_static_file('splash.html')
 
+#Remove a book from the database
+@app.route('/remove/<id>/')
+def remove(id):
+	id = uuid.UUID(id)
+	delete_statement = "DELETE FROM "+table_name+" WHERE id=%s"
+	session.execute(delete_statement, (id,))
+	return redirect('/')
 
 #The page to add a book to the database
 @app.route('/add/', methods=['GET', 'POST'])
