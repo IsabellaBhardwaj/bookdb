@@ -65,24 +65,23 @@ def search():
 
 		value_select_statement = "SELECT value FROM "+table_name+" WHERE id = %s and property = %s LIMIT 1 ALLOW FILTERING"
 
-		title_dict = {}
+		result_dict = {}
 		for row in title_ids:
 			id = row.id
 			title_name = session.execute(value_select_statement, (id, 'title'))[0]
 			author_name = session.execute(value_select_statement, (id, 'author'))[0]  
 			inner_dict = {'title': title_name.value, 'author': author_name.value}
-			title_dict[str(id)] = inner_dict
+			result_dict[str(id)] = inner_dict
 
-		author_dict = {}
 		for row in author_ids:
 			id = row.id
 			title_name = session.execute(value_select_statement, (id, 'title'))[0]
 			author_name = session.execute(value_select_statement, (id, 'author'))[0]  
 			inner_dict = {'title': title_name.value, 'author': author_name.value}
-			author_dict[str(id)] = inner_dict
+			result_dict[str(id)] = inner_dict
 
 
-		return render_template('search_cass.html', posting=True, query=query, title_results=title_dict, author_results=author_dict)  
+		return render_template('search_cass.html', posting=True, query=query, results=result_dict)  
 
 	else:
 		return render_template('search_cass.html', posting=False)

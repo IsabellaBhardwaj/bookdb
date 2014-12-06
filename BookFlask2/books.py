@@ -65,15 +65,14 @@ def search():
 	#Return results for titles, authors and genres that match the search query
 	if request.method == 'POST':
 		query = request.form['query']
-		title_cursor = books.find({'title':query})
-		author_cursor = books.find({'author':query})
+		
+		result_cursor = books.find({'$or':[{'title':query},{'author':query}]})
 
-		no_results = author_cursor.count() == 0 and title_cursor.count() == 0
+		no_results = result_cursor.count() == 0
 	
-		title_dict = convert_to_dict(title_cursor)
-		author_dict = convert_to_dict(author_cursor)     
+		result_dict = convert_to_dict(result_cursor)     
 
-		return render_template('search.html', posting=True, query=query, no_results=no_results, title_results=title_dict, author_results=author_dict)  
+		return render_template('search.html', posting=True, query=query, no_results=no_results, results=result_dict)  
 	else:
 		return render_template('search.html', posting=False)
 
