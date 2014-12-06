@@ -100,17 +100,17 @@ def detail(id):
 		old_properties = {str(row.property) for row in old_rows}
 		#all properties for this book after upgrade
 		current_properties = set()
-		#In the dict request.form, pre-existing properties and values make up key-value pairs, with the property being the key and the value being the value. New properties and values are all values in the dictionary, and their keys are named "new_field"+str(pair_number) and "new_value"+str(pair_number), respectively. pair_number is a digit that identifies which new property goes with which new value. 	
+		#In the dict request.form, pre-existing properties and values make up key-value pairs, with the property being the key and the value being the value. New properties and values are all values in the dictionary, and their keys are named "__new__field__"+str(pair_number) and "__new__value__"+str(pair_number), respectively. pair_number is a digit that identifies which new property goes with which new value. 	
 		batch = BatchStatement()
 		for key, value in request.form.iteritems():
 			#add new property and value to book
-			if key[:9] == 'new_field':
-				pair_number = key[9:]
-				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['new_value'+str(pair_number)], id, value))			
+			if key[:14] == '__new__field__':
+				pair_number = key[14:]
+				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['__new__value__'+str(pair_number)], id, value))			
 				current_properties.add(str(value))
 			
 			#update value of existing property of book
-			elif key[:9] != 'new_value':
+			elif key[:14] != '__new__value__':
 				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(value, id, key))
 				current_properties.add(str(key)) 
 		

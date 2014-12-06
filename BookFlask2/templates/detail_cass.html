@@ -164,8 +164,8 @@
 
 <!--This section of code is from http://www.quirksmode.org/dom/domform.html -->
 <div id="addField" style="display: none">
-	<input type="text" name="new_field" placeholder="New Attribute">
-	<input type="text" name="new_value" placeholder="New Value">
+	<input type="text" name="__new__field__" placeholder="New Attribute">
+	<input type="text" name="__new__value__" placeholder="New Value">
 	<input type="button" name="add" value="Remove" onclick="this.parentNode.parentNode.removeChild(this.parentNode);">
 </div>
 
@@ -180,14 +180,14 @@ function addNew(){
 	for(var i = 0; i < children.length; i++){
 		var name = children[i].name
 		if(name){
-			var root = name.substring(0, 9);
-			if(root == 'new_field'){
-				children[i].name = "new_field"+counter;
+			var root = name.substring(0, 14);
+			if(root == '__new__field__'){
+				children[i].name = "__new__field__"+counter;
 				children[i].value = "";
 				children[i].placeholder = "New Field";
 			}
-			else if(root == 'new_value'){
-				children[i].name = "new_value"+counter;
+			else if(root == '__new__value__'){
+				children[i].name = "__new__value__"+counter;
 				children[i].value = "";
 				children[i].placeholder = "New Value";
 			}
