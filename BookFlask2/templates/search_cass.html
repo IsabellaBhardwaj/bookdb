@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -66,7 +67,7 @@
      </div>
 
       {%if posting %}
-       {% if no_results %}
+       {% if not results %}
         <h3>No results for <i>'{{query}}'</i></h3>
        {% else %}
         <h3>Results for <i>'{{query}}'</i>:</h3>
