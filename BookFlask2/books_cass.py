@@ -88,44 +88,57 @@ def search():
 		return render_template('search_cass.html', posting=False)
 
 
-#Individual information page for each book
-@app.route('/detail/<id>/', methods=['GET', 'POST'])
-def detail(id):
-	print(id)
+#Update information for a book
+@app.route('/detail/<id>/', methods=['POST'])
+def update(id):
 	id = uuid.UUID(id)
-	if request.method == 'POST':
-		old_prop_query = "SELECT property FROM "+table_name+" WHERE id=%s"
-		old_rows = session.execute(old_prop_query, (id,))
-		#all properties for this book prior to upgrade
-		old_properties = {str(row.property) for row in old_rows}
-		#all properties for this book after upgrade
-		current_properties = set()
-		#In the dict request.form, pre-existing properties and values make up key-value pairs, with the property being the key and the value being the value. New properties and values are all values in the dictionary, and their keys are named "__new__field__"+str(pair_number) and "__new__value__"+str(pair_number), respectively. pair_number is a digit that identifies which new property goes with which new value. 	
-		batch = BatchStatement()
-		for key, value in request.form.iteritems():
-			#add new property and value to book
-			if key[:14] == '__new__field__':
-				pair_number = key[14:]
-				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['__new__value__'+str(pair_number)], id, value))			
-				current_properties.add(str(value))
+
+	old_prop_query = "SELECT property FROM "+table_name+" WHERE id=%s"
+	old_rows = session.execute(old_prop_query, (id,))
+	#all properties for this book prior to upgrade
+	old_properties = {str(row.property) for row in old_rows}
+	#all properties for this book after upgrade
+	current_properties = set()
+
+	#In the dict request.form, pre-existing properties and values make up key-value pairs, with the property being the key and the value being the value. New properties and values are all values in the dictionary, and their keys are named "__new__field__"+str(pair_number) and "__new__value__"+str(pair_number), respectively. pair_number is a digit that identifies which new property goes with which new value. 	
+	batch = BatchStatement()
+	for key, value in request.form.iteritems():
+		#add new property and value to book
+		if key[:14] == '__new__field__':
+			pair_number = key[14:]
+			batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(request.form['__new__value__'+str(pair_number)], id, value))			
+			current_properties.add(str(value))
 			
-			#update value of existing property of book
-			elif key[:14] != '__new__value__':
-				batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(value, id, key))
-				current_properties.add(str(key)) 
+		#update value of existing property of book
+		elif key[:14] != '__new__value__':
+			batch.add("UPDATE "+table_name+" SET value = %s WHERE id = %s and property = %s",(value, id, key))
+			current_properties.add(str(key)) 
 		
-		to_remove = old_properties - current_properties
-		delete_statement = "DELETE FROM "+table_name+" WHERE id=%s and property=%s"
-		for property in to_remove:
-			batch.add(delete_statement, (id, property)) 
-		session.execute(batch)
-	
+	to_remove = old_properties - current_properties
+	delete_statement = "DELETE FROM "+table_name+" WHERE id=%s and property=%s"
+	for property in to_remove:
+		batch.add(delete_statement, (id, property)) 
+	session.execute(batch)
+
 	results = {}
 	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
 	for property in all_props_and_vals:
 		results[property.property] = property.value
 	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
 	return render_template('detail_cass.html', result=results, js_results=js_results, id=id)
+
+#Update information for a book
+@app.route('/detail/<id>/', methods=['GET'])
+def display(id):
+	id = uuid.UUID(id)
+	results = {}
+	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
+	for property in all_props_and_vals:
+		results[property.property] = property.value
+	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
+	return render_template('detail_cass.html', result=results, js_results=js_results, id=id)
+
+	
 
 
 

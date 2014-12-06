@@ -21,28 +21,36 @@ def remove(title, author):
 	return redirect('/')
 
 #Individual information page for each book
-@app.route('/detail/<title>/<author>/', methods=['GET', 'POST'])
-def detail(title, author):
-	if request.method == 'GET':
-		cursor = books.find_one({'title':title, 'author':author})
+@app.route('/detail/<title>/<author>/', methods=['GET'])
+def display(title, author):
 
-	elif request.method == 'POST':
-		#Add new values of all pre-existing attributes
-		updated_document = {attribute: value for attribute, value in request.form.iteritems() if attribute[:14] != '__new__field__' and attribute[:14] != '__new__value__'}
-		num_old_fields = len(updated_document)
-		num_new_fields = (len(request.form)-num_old_fields)/2
-		#Add values of new fields, if any
-		if(num_new_fields > 0):
-			for i in range(1, num_new_fields + 1):
-				new_attribute = request.form['__new__field__'+str(i)]
-				new_value = request.form['__new__value__'+str(i)]
-				updated_document[new_attribute] = new_value
-		books.update({'title':title, 'author': author}, updated_document)
-		cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
-			
+	cursor = books.find_one({'title':title, 'author':author})
 	results = {field: value for field, value in cursor.items()}
 	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
 	return render_template('detail.html', result=results, js_results=js_results)
+
+
+#Update a book's fields and attributes
+@app.route('/detail/<title>/<author>/', methods=['POST'])
+def update(title, author):
+
+	#Add new values of all pre-existing attributes
+	updated_document = {attribute: value for attribute, value in request.form.iteritems() if attribute[:14] != '__new__field__' and attribute[:14] != '__new__value__'}
+	num_old_fields = len(updated_document)
+	num_new_fields = (len(request.form)-num_old_fields)/2
+	#Add values of new fields, if any
+	if(num_new_fields > 0):
+		for i in range(1, num_new_fields + 1):
+			new_attribute = request.form['__new__field__'+str(i)]
+			new_value = request.form['__new__value__'+str(i)]
+			updated_document[new_attribute] = new_value
+
+	books.update({'title':title, 'author': author}, updated_document)
+	cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
+	results = {field: value for field, value in cursor.items()}
+	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
+	return render_template('detail.html', result=results, js_results=js_results)
+
 
 
 #serves image in image file for a particular book
