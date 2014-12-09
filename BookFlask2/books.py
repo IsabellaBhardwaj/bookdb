@@ -21,17 +21,19 @@ def remove(title, author):
 	return redirect('/')
 
 #Individual information page for each book
-@app.route('/detail/<title>/<author>/', methods=['GET'])
+@app.route('/detail/<title>/<author>/', methods=['GET', 'POST'])
 def display(title, author):
 
-	cursor = books.find_one({'title':title, 'author':author})
+	if request.method == 'GET':
+		cursor = books.find_one({'title':title, 'author':author})
+	elif request.method == 'POST':
+		cursor = update(title, author)
 	results = {field: value for field, value in cursor.items()}
 	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
 	return render_template('detail.html', result=results, js_results=js_results)
 
 
 #Update a book's fields and attributes
-@app.route('/detail/<title>/<author>/', methods=['POST'])
 def update(title, author):
 
 	#Add new values of all pre-existing attributes
@@ -46,11 +48,7 @@ def update(title, author):
 			updated_document[new_attribute] = new_value
 
 	books.update({'title':title, 'author': author}, updated_document)
-	cursor = books.find_one({'title': request.form['title'], 'author': request.form['author']})
-	results = {field: value for field, value in cursor.items()}
-	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
-	return render_template('detail.html', result=results, js_results=js_results)
-
+	return books.find_one({'title': request.form['title'], 'author': request.form['author']})
 
 
 #serves image in image file for a particular book

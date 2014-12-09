@@ -88,9 +88,7 @@ def search():
 
 
 #Update information for a book
-@app.route('/detail/<id>/', methods=['POST'])
 def update(id):
-	id = uuid.UUID(id)
 
 	old_prop_query = "SELECT property FROM "+table_name+" WHERE id=%s"
 	old_rows = session.execute(old_prop_query, (id,))
@@ -119,17 +117,14 @@ def update(id):
 		batch.add(delete_statement, (id, property)) 
 	session.execute(batch)
 
-	results = {}
-	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
-	for property in all_props_and_vals:
-		results[property.property] = property.value
-	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
-	return render_template('detail_cass.html', result=results, js_results=js_results, id=id)
-
 #Update information for a book
-@app.route('/detail/<id>/', methods=['GET'])
+@app.route('/detail/<id>/', methods=['GET', 'POST'])
 def display(id):
+
 	id = uuid.UUID(id)
+	if request.method == 'POST':
+		update(id)
+	
 	results = {}
 	all_props_and_vals = session.execute("SELECT property, value FROM "+table_name+" WHERE id = %s", (id,)) 
 	for property in all_props_and_vals:
@@ -138,8 +133,6 @@ def display(id):
 	return render_template('detail_cass.html', result=results, js_results=js_results, id=id)
 
 	
-
-
 
 if __name__ == '__main__':
 	app.debug = True
