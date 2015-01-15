@@ -23,19 +23,20 @@ def remove(title, author):
 #Individual information page for each book
 @app.route('/detail/<title>/<author>/', methods=['GET', 'POST'])
 def display(title, author):
-
 	if request.method == 'GET':
 		cursor = books.find_one({'title':title, 'author':author})
 	elif request.method == 'POST':
 		cursor = update(title, author)
 	results = {field: value for field, value in cursor.items()}
 	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
-	return render_template('detail.html', result=results, js_results=js_results)
+	if request.method == 'POST' and (title != request.form['title'] or author != request.form['author']):
+		return redirect('/detail/'+request.form['title']+'/'+request.form['author']+'/')
+	else:
+		return render_template('detail.html', result=results, js_results=js_results)
 
 
 #Update a book's fields and attributes
 def update(title, author):
-
 	#Add new values of all pre-existing attributes
 	updated_document = {attribute: value for attribute, value in request.form.iteritems() if attribute[:14] != '__new__field__' and attribute[:14] != '__new__value__'}
 	num_old_fields = len(updated_document)
@@ -47,8 +48,7 @@ def update(title, author):
 			new_value = request.form['__new__value__'+str(i)]
 			updated_document[new_attribute] = new_value
 
-	books.update({'title':title, 'author': author}, updated_document)
-	return books.find_one({'title': request.form['title'], 'author': request.form['author']})
+	return books.find_and_modify({'title':title, 'author': author}, updated_document, new=True)
 
 
 #serves image in image file for a particular book
