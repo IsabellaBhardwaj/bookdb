@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, send_file
 import pymongo
 
 
@@ -27,6 +27,8 @@ def display(title, author):
 		cursor = books.find_one({'title':title, 'author':author})
 	elif request.method == 'POST':
 		cursor = update(title, author)
+	if cursor is None:
+		return send_file('static/book_not_found.html', cache_timeout=1)
 	results = {field: value for field, value in cursor.items()}
 	js_results = {str(field).replace('"', '\\"') :str(value).replace('"', '\\"') for field, value in results.items()}
 	if request.method == 'POST' and (title != request.form['title'] or author != request.form['author']):
